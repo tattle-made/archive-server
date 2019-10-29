@@ -100,8 +100,6 @@ app.post('/api/postByTimeAndUsers/:page', (req: Request, res: Response) => {
 });
 
 app.post('/api/posts', (req: Request, res: Response) => {
-    console.log('====');
-    console.log(req.body);
     const post = new PostCreateRequest(req.body);
     const ioPost = req.app.get('socketio');
     postController
