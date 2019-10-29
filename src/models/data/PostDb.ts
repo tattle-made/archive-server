@@ -1,9 +1,13 @@
 import * as Sequelize from 'sequelize';
 import db from '../../service/db';
 import { PostCreateRequest } from '../request/PostCreateRequest';
+import {Promise} from 'bluebird';
+import axios from 'axios';
+import * as config from 'config';
 
 export class Post extends Sequelize.Model {}
 const Op = Sequelize.Op;
+const searchServerConfig: any = config.get('search-server');
 
 Post.init(
     {
@@ -23,10 +27,10 @@ Post.init(
 //     console.log('post Created');
 // });
 
-Post.sync({alter:true})
-.then(() => {
-    console.log('POST SYNCED');
-});
+// Post.sync({alter:true})
+// .then(() => {
+//     console.log('POST SYNCED');
+// });
 
 export function create(param: PostCreateRequest): Promise<JSON> {
     return Post.create(param.getAll())
@@ -160,4 +164,41 @@ export function deletePost(id: number) {
                 error: err.toJSON(),
             }),
         );
+}
+
+export function indexPendingPosts() {
+    console.log('****');
+    console.log(`${searchServerConfig.host}:${searchServerConfig.port}`);
+    return Post.findAll({
+        limit: 10,
+        where: {
+            indexed_for_search: false,
+        },
+    })
+    .then((posts) => {
+        console.log('=======INDEXING========');
+        
+        const indexPromise = posts.map((post) => {
+            switch(post.get('type')){
+                case 'text':
+                    return ax
+            }
+            axios.post(`${searchServerConfig.host}:${searchServerConfig.port}`)
+
+
+            console.log(post.get('id'));
+            if (post.get('id') === 228) {
+                return Promise.resolve('error indexing 228');
+            } else {
+                return Promise.resolve(`indexing ${post.get('id')}`);
+            }
+        });
+        return Promise.each(indexPromise, (promise) => {
+            return promise;
+        });
+        
+        console.log('=======END-INDEXING========');
+    })
+    .catch((err) => ({message: 'Error operating in Database', error: err.JSON}))
+    ;
 }

@@ -1,4 +1,7 @@
 import BaseController from './_BaseController';
+import { PostController } from './PostController';
+
+const postController = new PostController();
 
 export class SearchIndexingController extends BaseController {
     constructor() {
@@ -6,6 +9,11 @@ export class SearchIndexingController extends BaseController {
     }
 
     public indexPending() {
-        console.log('indexing');
+        console.log('indexing 1');
+        postController.getIndexPendingPosts()
+        .then((result) => {
+            console.log(result);
+        });
     }
 }
+

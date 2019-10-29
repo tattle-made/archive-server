@@ -189,6 +189,14 @@ app.delete('/api/users/delete/:id', (req: Request, res: Response) => {
         .catch((err) => res.send(err.JSON));
 });
 
+app.post('/api/index-pending', (req: Request, res: Response) => {
+    postController.getIndexPendingPosts()
+    .then((result) => {
+        res.send(result);
+    })
+    .catch((err) => res.send(err.JSON));
+});
+
 app.use(Sentry.Handlers.errorHandler());
 
 // app.use(function onError(err, req, res, next) {
