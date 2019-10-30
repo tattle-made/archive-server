@@ -9,6 +9,7 @@ export class Post extends Sequelize.Model {}
 const Op = Sequelize.Op;
 const searchServerConfig: any = config.get('search-server');
 
+
 Post.init(
     {
         type: Sequelize.ENUM('text', 'image', 'video'),
@@ -177,15 +178,8 @@ export function indexPendingPosts() {
     })
     .then((posts) => {
         console.log('=======INDEXING========');
-        
+
         const indexPromise = posts.map((post) => {
-            switch(post.get('type')){
-                case 'text':
-                    return ax
-            }
-            axios.post(`${searchServerConfig.host}:${searchServerConfig.port}`)
-
-
             console.log(post.get('id'));
             if (post.get('id') === 228) {
                 return Promise.resolve('error indexing 228');
