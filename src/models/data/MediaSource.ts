@@ -14,12 +14,11 @@ MediaSource.init(
     },
 );
 
-// MediaSource.sync({alter: true})
-// .then((res) => {
-//     console.log('***');
-//     console.log(res);
-// })
-// .catch((err) => console.log(err));
+MediaSource.sync({alter: true})
+.then(() => {
+    console.log('media source synced');
+})
+.catch((err) => console.log(err));
 
 // MediaSource.create({serviceName: 'aws', dirName: 'temp-story-scrape-store'})
 // .then((res) => console.log('media source created ', res))

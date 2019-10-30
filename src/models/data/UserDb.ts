@@ -21,9 +21,15 @@ User.init(
     },
 );
 
-MediaSource.belongsTo(User);
+User.belongsTo(MediaSource);
 
-db.get().sync({alter : true});
+// User.sync({alter: true})
+// .then(() => console.log('user synced'))
+// .catch((err) => console.log(err));
+
+// MediaSource.belongsTo(User);
+
+// db.get().sync({alter : true});
 
 // User.sync({alter : true})
 // .then(() => {
