@@ -10,6 +10,7 @@ const Op = Sequelize.Op;
 const searchServerConfig: any = config.get('search-server');
 
 import {User} from './UserDb';
+import { MediaSource } from './MediaSource';
 
 Post.init(
     {
@@ -30,10 +31,10 @@ Post.belongsTo(User);
 //     console.log('post Created');
 // });
 
-Post.sync({alter:true})
-.then(() => {
-    console.log('POST SYNCED');
-});
+// Post.sync({alter:true})
+// .then(() => {
+//     console.log('POST SYNCED');
+// });
 
 export function create(param: PostCreateRequest): Promise<JSON> {
     return Post.create(param.getAll())
@@ -52,6 +53,12 @@ export function getAll(page: number): Promise<object> {
         offset: page * pageSize - pageSize,
         limit: 10,
         order: [['createdAt', 'DESC']],
+        include: [
+            {
+                model: User,
+                include: [MediaSource],
+            },
+        ],
     })
         .then((result) => {
             return {
