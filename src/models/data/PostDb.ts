@@ -9,13 +9,13 @@ export class Post extends Sequelize.Model {}
 const Op = Sequelize.Op;
 const searchServerConfig: any = config.get('search-server');
 
+import {User} from './UserDb';
 
 Post.init(
     {
         type: Sequelize.ENUM('text', 'image', 'video'),
         data: Sequelize.STRING,
         filename: Sequelize.STRING,
-        user_id: Sequelize.INTEGER,
         indexed_for_search: {type: Sequelize.BOOLEAN, defaultValue: false},
     },
     {
@@ -24,14 +24,16 @@ Post.init(
     },
 );
 
+Post.belongsTo(User);
+
 // Post.afterCreate( () => {
 //     console.log('post Created');
 // });
 
-// Post.sync({alter:true})
-// .then(() => {
-//     console.log('POST SYNCED');
-// });
+Post.sync({alter:true})
+.then(() => {
+    console.log('POST SYNCED');
+});
 
 export function create(param: PostCreateRequest): Promise<JSON> {
     return Post.create(param.getAll())
