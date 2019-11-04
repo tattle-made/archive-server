@@ -21,6 +21,8 @@ import { loginValidator } from './core/validation/login';
 // middleware
 import { authenticate } from './core/middleware/authenticate';
 import { authorize } from './core/middleware/authorize';
+import { SearchServer } from './service/search-server';
+
 
 const app = express();
 const port = 3003;
@@ -62,6 +64,27 @@ const postController = new PostController();
 const searchController = new SearchController();
 const loginController = new LoginController();
 const userController = new UserController();
+
+const searchServer = new SearchServer();
+
+
+app.post('/api/search/stories', (req: Request, res: Response) => {
+    const url = req.body.url;
+
+    res.json({message: 'ok'});
+    console.log({url});
+});
+
+app.post('/api/search/duplicate', (req: Request, res: Response) => {
+    const url = req.body.url;
+    const threshold = req.body.threshold;
+
+    searchServer.findDuplicate(url, threshold)
+    .then((result) => res.json(result))
+    .catch((err) => console.log('ERROR ', err));
+
+    console.log({url});
+});
 
 app.get('/', (req: Request, res: Response) => {
     res.send('pong');

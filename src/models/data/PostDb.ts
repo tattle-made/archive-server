@@ -12,6 +12,16 @@ const searchServerConfig: any = config.get('search-server');
 import {User} from './UserDb';
 import { MediaSource } from './MediaSource';
 
+export function deduceMediaUrl(serviceName: string, dirName: string, fileName: string) {
+    switch (serviceName) {
+        case 'aws':
+            return `https://${dirName}.s3.ap-south-1.amazonaws.com/${fileName}`;
+        case 'firebase':
+            return `https://images.squarespace-cdn.com/content/5c997ab5ca525b2b8ac87677/
+            1553562416145-Z6Q3MFG7O5TQ6UYVQ32T/logo_logomark.png?content-type=image%2Fpng`;
+    }
+}
+
 Post.init(
     {
         type: Sequelize.ENUM('text', 'image', 'video'),
@@ -87,7 +97,21 @@ export function get(id: number) {
         where: {
             id,
         },
-    }).catch((err) => {
+        include: [
+            {
+                model: User,
+                attributes: ['username'],
+                include: [
+                    {
+                        model: MediaSource,
+                        attributes: ['serviceName', 'dirName'],
+                    },
+                ],
+            },
+        ],
+    })
+    .then((post) => post)
+    .catch((err) => {
         return Promise.resolve({
             message: 'Error Fetching Post',
             error: err,
