@@ -1,7 +1,8 @@
 import * as config from 'config';
 import Axios from 'axios';
-import {Post, get, deduceMediaUrl} from '../models/data/PostDb';
+import {Post, get, deduceMediaUrl, appendMediaUrlToPost} from '../models/data/PostDb';
 import {User} from '../models/data/UserDb';
+import {Promise} from 'bluebird';
 const searchServerConfig: any = config.get('search-server');
 
 /*
@@ -79,19 +80,33 @@ export class SearchServer {
         })
         .then((result) => result.data)
         .then((data) => get(data.doc_id))
-        .then((result) => {
-            if (result instanceof Post) {
-                const data: any = result.get({plain: true});
-                const mediaUrl = deduceMediaUrl(
-                    data.user.mediaSource.serviceName,
-                    data.user.mediaSource.dirName,
-                    data.filename);
+        .then((result) => appendMediaUrlToPost(result as Post))
+        .catch((err) => console.log('FIND DUPLICATE ERROR', err));
+    }
 
-                return { ...data, mediaUrl };
-            } else {
-                return result;
-            }
+    public searchTag(tag: string) {
+        return Axios.post('http://3.130.147.43:7000/search_tags', {
+            tags: [tag],
         })
+        .then((result) => { console.log('1', result); return result; })
+        .then((result) => result.data.docs.splice(0, 5))
+        .then((docIds) => Promise.all(docIds.map( (docId: number) => (
+            get(docId).then((result) => appendMediaUrlToPost(result as Post))
+        ))))
+        // .then((data) => get(data.doc_id))
+        // .then((result) => {
+        //     if (result instanceof Post) {
+        //         const data: any = result.get({plain: true});
+        //         const mediaUrl = deduceMediaUrl(
+        //             data.user.mediaSource.serviceName,
+        //             data.user.mediaSource.dirName,
+        //             data.filename);
+
+        //         return { ...data, mediaUrl };
+        //     } else {
+        //         return result;
+        //     }
+        // })
         .catch((err) => console.log('FIND DUPLICATE ERROR', err));
     }
 }

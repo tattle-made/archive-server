@@ -22,6 +22,19 @@ export function deduceMediaUrl(serviceName: string, dirName: string, fileName: s
     }
 }
 
+export function appendMediaUrlToPost(post: Post) {
+    if (post instanceof Post) {
+        const data: any = post.get({plain: true});
+        const mediaUrl = deduceMediaUrl(
+            data.user.mediaSource.serviceName,
+            data.user.mediaSource.dirName,
+            data.filename);
+        return { ...data, mediaUrl };
+    } else {
+        return post;
+    }
+}
+
 Post.init(
     {
         type: Sequelize.ENUM('text', 'image', 'video'),
