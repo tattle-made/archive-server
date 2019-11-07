@@ -27,6 +27,10 @@ import { authorize } from './core/middleware/authorize';
 // tslint:disable-next-line:max-line-length
 import {register as registerFactCheckStoryRoute} from './routes/fact-checked-stories/FactCheckedStoryRoutes';
 
+// Queue
+import queueManagerInstance from './queue';
+queueManagerInstance.setupWorker();
+
 const app = express();
 const port = 3003;
 const server = app.listen(port, () => {
