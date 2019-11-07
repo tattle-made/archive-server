@@ -1,4 +1,4 @@
-import _BaseController from '../controllers/_BaseController';
+import _BaseController from '../../controllers/_BaseController';
 import { FactCheckedStory } from './FactCheckedStoryDb';
 import { CreateStoryRequestModel } from './CreateStoryRequestModel';
 

@@ -1,5 +1,5 @@
 import * as Sequelize from 'sequelize';
-import db from '../service/db';
+import db from '../../service/db';
 import {Promise} from 'bluebird';
 
 export class FactCheckedStory extends Sequelize.Model {}

@@ -24,7 +24,8 @@ import { authenticate } from './core/middleware/authenticate';
 import { authorize } from './core/middleware/authorize';
 
 // routes
-import {register as registerFactCheckStoryRoute} from './routes/FactCheckedStoryRoutes';
+// tslint:disable-next-line:max-line-length
+import {register as registerFactCheckStoryRoute} from './routes/fact-checked-stories/FactCheckedStoryRoutes';
 
 const app = express();
 const port = 3003;
