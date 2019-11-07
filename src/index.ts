@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as cors from 'cors';
 import * as Sentry from '@sentry/node';
 import * as aws from 'aws-sdk';
+import 'reflect-metadata';
 
 // socket.io
 import * as socketio from 'socket.io';
