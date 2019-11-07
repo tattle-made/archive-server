@@ -22,6 +22,9 @@ import { loginValidator } from './core/validation/login';
 import { authenticate } from './core/middleware/authenticate';
 import { authorize } from './core/middleware/authorize';
 
+// routes
+import {register as registerFactCheckStoryRoute} from './routes/FactCheckedStoryRoutes';
+
 const app = express();
 const port = 3003;
 const server = app.listen(port, () => {
@@ -66,6 +69,8 @@ const userController = new UserController();
 app.get('/', (req: Request, res: Response) => {
     res.send('pong');
 });
+
+registerFactCheckStoryRoute(app);
 
 app.get('/api/posts/:page', (req: Request, res: Response) => {
     const page = req.params.page || 1;
