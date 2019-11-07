@@ -6,6 +6,7 @@ export class FactCheckedStory extends Sequelize.Model {}
 
 FactCheckedStory.init({
         storyId: Sequelize.STRING,
+        docId: Sequelize.STRING,
         url: Sequelize.STRING,
         type: Sequelize.ENUM('text', 'image', 'video'),
     },
@@ -15,6 +16,6 @@ FactCheckedStory.init({
     },
 );
 
-FactCheckedStory.sync()
-.then((res) => console.log(res))
-.catch((err) => console.log(err));
+// FactCheckedStory.sync({alter: true})
+// .then((res) => console.log(res))
+// .catch((err) => console.log(err));
