@@ -15,4 +15,11 @@ export function register(app: Express) {
         .then((result) => res.json({status: 'data', ...result}))
         .catch((err) => res.json({status: 'error', message : err.message}));
     });
+
+    app.post('/api/search/duplicate-stories', (req: Request, res: Response) => {
+        const url = req.body.url;
+        searchServer.findDuplicateStories(url)
+        .then((result) => res.json({status: 'data', urls: result}))
+        .catch((err) => res.json({status: 'error', message : err.message}));
+    });
 }

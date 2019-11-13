@@ -3,6 +3,7 @@ import Axios, {AxiosResponse} from 'axios';
 import {Post, get, deduceMediaUrl, appendMediaUrlToPost} from '../models/data/PostDb';
 import {User} from '../models/data/UserDb';
 import {Promise} from 'bluebird';
+import { getStoryByPostId } from '../routes/fact-checked-stories/FactCheckedStoryDb';
 const searchServerConfig: any = config.get('search-server');
 
 /*
@@ -105,11 +106,47 @@ export class SearchServer {
         .then((data) => get(data.doc_id))
         .then((result) => result)
         .catch((err) => Promise.reject(err));
+    }
 
+    public findDuplicateStories(imageUrl: string) {
+        return Axios.post('http://3.130.147.43:7000/find_duplicate', {
+            image_url: imageUrl,
+        })
+        .then((result) => result.data)
+        .then((data) => {
+            if (data.failed === 1) {
+                Promise.reject('no duplicate found');
+            } else {
+                // tslint:disable-next-line:max-line-length
+                const duplicateStories = data.result.filter((item: any) => item.source === 'story-scraper');
 
-        // .then((data) => get(data.doc_id))
-        // .then((result) => appendMediaUrlToPost(result as Post))
-        // .catch((err) => console.log('FIND DUPLICATE ERROR', err));
+                if (duplicateStories.length === 0) {
+                    Promise.reject('unknown error');
+                } else {
+                    return duplicateStories.splice(0, 3);
+                }
+            }
+        })
+        .then((stories) => Promise.all(stories.map((story: any) => get(story.doc_id))))
+        .then((posts: any) => Promise.all(posts.map((post: any) => getStoryByPostId(post.id) )))
+        .then((docs) => {
+            return Promise.all(docs.map((doc: any) => {
+                // tslint:disable-next-line:max-line-length
+                console.log(doc);
+                return Axios.get(`http://52.66.83.191:5001/api/metadata?docId=${doc.docId}`)
+                .then((res) => res.data);
+            }));
+        })
+        .then((metadata) => {
+            return metadata.map((item: any) => {
+                return {
+                    title: item.headline,
+                    url: item.postURL,
+                    timestamp: item.date_updated,
+                };
+            });
+        })
+        .catch((err) => Promise.reject(err));
     }
 
     public searchTag(tag: string) {
