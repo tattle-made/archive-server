@@ -27,7 +27,6 @@ class QueueManager {
     }
 
     public addFactCheckStoryIndexJob(jobParam: CreateStoryRequestModel) {
-        //return this.factCheckStoriesIndexQueue.add(jobParam.getJSONForQueue());
         return this.whatsappPostIndexQueue.add(jobParam.getJSONForQueue());
     }
 

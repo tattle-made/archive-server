@@ -4,7 +4,8 @@ export class CreateStoryRequestModel {
     public docId!: string;
     public type!: string;
     public filename!: string;
-    public userId!: number;
+    public userId: number = 164;
+    public postId!: number;
 
     public isValid(): boolean {
         if ( this.url !== undefined && this.docId !== undefined && this.type !== undefined
@@ -16,7 +17,7 @@ export class CreateStoryRequestModel {
         }
     }
 
-    public getJSONForSequelize() {
+    public getJSONForStoringInPostSequelize() {
         return {
             type: this.type,
             data: '',
@@ -25,14 +26,23 @@ export class CreateStoryRequestModel {
         };
     }
 
+
+    public getJSONForStoringInFCStorySequelize() {
+        return {
+            type: this.type,
+            postId: this.postId,
+            url: this.url,
+            docId: this.docId,
+            storyId: this.storyId,
+        };
+    }
+
     public getJSONForQueue() {
         return {
-            url: this.url,
-            storyId: this.storyId,
-            docId: this.docId,
+            mediaUrl: this.url,
             type: this.type,
-            filename: this.filename,
-            userId: this.userId,
+            postId: this.postId,
+            source: 'story-scraper',
         };
     }
 }
