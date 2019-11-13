@@ -7,6 +7,8 @@ import {Promise} from 'bluebird';
 // import { PostCreateRequest } from '../../build/models/request/PostCreateRequest';
 import { PostCreateRequest } from '../models/request/PostCreateRequest';
 import { PostIndexJobCreateModel } from '../routes/posts/PostIndexJobCreateModel';
+import { SearchServer } from '../service/search-server';
+
 
 
 class QueueManager {
@@ -43,10 +45,9 @@ class QueueManager {
     }
 
     private processWhatsappQueue() {
+        const searchServer = new SearchServer();
         this.whatsappPostIndexQueue.process((job) => {
-            return Promise.resolve(job.toJSON())
-            .then((result) => console.log(result))
-            .then(() => Promise.delay(5000));
+            return searchServer.indexPostLoose(job.toJSON().data).then();
         });
     }
 }
