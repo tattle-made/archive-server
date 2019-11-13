@@ -3,6 +3,9 @@ import {plainToClass} from 'class-transformer';
 import { CreateStoryRequestModel } from './CreateStoryRequestModel';
 import { FactCheckedStoryController } from './FactCheckedStoryController';
 import queueManagerInstance from '../../queue';
+import { PostCreateRequest } from '../../models/request/PostCreateRequest';
+import { PostController } from '../../controllers/PostController';
+import { PostIndexJobCreateModel } from '../posts/PostIndexJobCreateModel';
 
 // Job Queues
 
@@ -13,16 +16,22 @@ import queueManagerInstance from '../../queue';
  */
 export function register(app: Express) {
     app.post('/api/fact-check-story', (req: Request, res: Response) => {
+        const postController = new PostController();
         const createStoryRequestModelInstance = plainToClass(CreateStoryRequestModel, req.body);
-        const factCheckedStoryController = new FactCheckedStoryController();
+        const post = new PostCreateRequest(createStoryRequestModelInstance.getJSONForSequelize());
 
-        if (!createStoryRequestModelInstance.isValid()) {
-            res.status(400).end();
-        } else {
-            queueManagerInstance.addFactCheckStoryIndexJob(createStoryRequestModelInstance)
-            .then((result) => res.json({message: 'job added'}))
-            .catch((err) => console.log(err));
-        }
-
+        postController
+        .create(post)
+        .then((response: any) => {
+            res.send(response);
+            return response.id;
+        })
+        .then((postId) => postController.get(postId))
+        .then((postJson) => {
+            // tslint:disable-next-line:max-line-length
+            const createPostIndexJobRequestModelInstance = plainToClass(PostIndexJobCreateModel, postJson);
+            queueManagerInstance.addWhatsappPostToIndexJob(createPostIndexJobRequestModelInstance);
+        })
+        .catch((err) => res.send(err.JSON));
     });
 }
