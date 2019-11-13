@@ -83,15 +83,33 @@ export class SearchServer {
     //     .catch((err) => console.log('error getting data'));
     // }
 
-    public findDuplicate(imageUrl: string, threshold: number) {
+    // todo currently duplicate only returns the first matching duplicate. make it an array
+    public findDuplicate(imageUrl: string) {
         return Axios.post('http://3.130.147.43:7000/find_duplicate', {
             image_url: imageUrl,
-            threshold,
         })
         .then((result) => result.data)
+        .then((data) => {
+            if (data.failed === 1) {
+                Promise.reject('no duplicate found');
+            } else {
+                const duplicate = data.result.filter((item: any) => item.dist === 0);
+
+                if (duplicate.length === 1) {
+                    return duplicate[0];
+                } else {
+                    Promise.reject('unknown error');
+                }
+            }
+        })
         .then((data) => get(data.doc_id))
-        .then((result) => appendMediaUrlToPost(result as Post))
-        .catch((err) => console.log('FIND DUPLICATE ERROR', err));
+        .then((result) => result)
+        .catch((err) => Promise.reject(err));
+
+
+        // .then((data) => get(data.doc_id))
+        // .then((result) => appendMediaUrlToPost(result as Post))
+        // .catch((err) => console.log('FIND DUPLICATE ERROR', err));
     }
 
     public searchTag(tag: string) {
