@@ -23,7 +23,7 @@ export class SearchServer {
             case 'text':
                 return this.indexText(postId, post.get('data') as string);
             case 'image':
-                return this.indexImage(postId, 'temp_url');
+                return this.indexImage(postId, 'url');
             case 'video':
                 return this.indexImage(postId, 'temp_url');
         }
