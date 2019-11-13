@@ -149,6 +149,39 @@ export class SearchServer {
         .catch((err) => Promise.reject(err));
     }
 
+    public findTextWithinImage(text: string) {
+        return Axios.post('http://3.130.147.43:7000/find_duplicate', {
+            text,
+        })
+        .then((result) => result.data)
+        .then((data) => {
+            if (data.failed === 1) {
+                Promise.reject('no duplicate found');
+            } else {
+                if (data.result.length === 0) {
+                    Promise.reject('unknown error');
+                } else {
+                    return data.result.splice(0,5);
+                }
+            }
+        })
+        .then((duplicates) => {
+            return Promise.all(duplicates.map((duplicate: any) => {
+                return get(duplicate.doc_id);
+            }));
+        })
+        .then((posts) => {
+            return posts.map((post: any) => {
+                return{
+                    id: post.id,
+                    type: post.type,
+                    mediaUrl: post.mediaUrl,
+                };
+            });
+        })
+        .catch((err) => Promise.reject(err));
+    }
+
     public searchTag(tag: string) {
         return Axios.post('http://3.130.147.43:7000/search_tags', {
             tags: [tag],

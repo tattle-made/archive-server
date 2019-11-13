@@ -22,4 +22,11 @@ export function register(app: Express) {
         .then((result) => res.json({status: 'data', urls: result}))
         .catch((err) => res.json({status: 'error', message : err.message}));
     });
+
+    app.post('/api/search/find-text-in-image', (req: Request, res: Response) => {
+        const text = req.body.text;
+        searchServer.findTextWithinImage(text)
+        .then((result) => res.json({status: 'data', posts: result}))
+        .catch((err) => res.json({status: 'error', message : err.message}));
+    });
 }
