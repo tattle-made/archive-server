@@ -104,7 +104,13 @@ export class SearchServer {
             }
         })
         .then((data) => get(data.doc_id))
-        .then((result) => result)
+        .then((result) => ({
+            id: result.id,
+            type: result.type,
+            mediaUrl: result.mediaUrl,
+            heading: result.user.username,
+            timestamp: result.createdAt,
+        }))
         .catch((err) => Promise.reject(err));
     }
 
@@ -186,11 +192,19 @@ export class SearchServer {
         return Axios.post('http://3.130.147.43:7000/search_tags', {
             tags: [tag],
         })
-        .then((result) => { console.log('1', result); return result; })
         .then((result) => result.data.docs.splice(0, 5))
         .then((docIds) => Promise.all(docIds.map( (docId: number) => (
             get(docId).then((result) => appendMediaUrlToPost(result as Post))
         ))))
+        .then((posts) => {
+            return posts.map((post: any) => {
+                return({
+                    id: post.id,
+                    type: post.type,
+                    mediaUrl: post.mediaUrl,
+                });
+            });
+        })
         // .then((data) => get(data.doc_id))
         // .then((result) => {
         //     if (result instanceof Post) {

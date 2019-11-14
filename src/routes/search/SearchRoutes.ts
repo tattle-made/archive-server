@@ -29,4 +29,11 @@ export function register(app: Express) {
         .then((result) => res.json({status: 'data', posts: result}))
         .catch((err) => res.json({status: 'error', message : err.message}));
     });
+
+    app.post('/api/search/find-tag', (req: Request, res: Response) => {
+        const text = req.body.tag;
+        searchServer.searchTag(text)
+        .then((result) => res.json({status: 'data', posts: result}))
+        .catch((err) => res.json({status: 'error', message : err.message}));
+    });
 }
