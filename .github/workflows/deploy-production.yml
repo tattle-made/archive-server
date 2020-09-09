@@ -26,13 +26,29 @@ jobs:
         arg1: ${{ secrets.AWS_ACCESS_KEY_ID }}
         arg2: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-    - name: Install EB-CLI
-      run: pip install awsebcli --upgrade --user
-      
-    - name: deploy to ebs
-      run: |
-        mkdir ~/.aws
-        echo '[profile eb-cli]' >> ~/.aws/config
-        echo 'aws_access_key_id =' ${{ secrets.AWS_ACCESS_KEY_ID}} >> ~/.aws/config
-        echo 'aws_secret_access_key =' ${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/config
-        ~/.local/bin/eb deploy archive-live -l $GITHUB_SHA
+    - name: Deploy to k8s
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.K8S_HOST_PROD }}
+          username: ${{ secrets.K8S_USERNAME }}
+          key: ${{ secrets.K8S_KEY }}
+          script: |
+            ./autodeploy_kosh_rest.sh.sh ${{ steps.vars.outputs.sha_short }} >> ~/deploy.log 2>&1
+
+      - name: Notify on Slack
+        uses: rtCamp/action-slack-notify@v2.0.0
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: "Deployed Kosh to staging environment"
+          SLACK_TITLE: "staging-deploy workflow complete"
+          SLACK_COLOR: "#020637"
+          SLACK_ICON: https://tattle-media.s3.amazonaws.com/monogram-dark.svg
+    
+    
+    
+    
+    
+    
+    
+    
+    
